@@ -14,6 +14,10 @@ RUN sed -i -e"s/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" /etc/mysq
 ADD start-db.sh /opt/start-db.sh
 RUN chmod +x /opt/start-db.sh
 EXPOSE 3306
+
+# COPY volumes for MySQL
+VOLUME  ["/etc/mysql", "/var/lib/mysql" ]
+
 CMD ["/bin/bash", "/opt/start-db.sh"]
 
 #Debug
