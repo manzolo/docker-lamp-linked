@@ -42,6 +42,7 @@ COPY www /var/www/site
 #Configurazioni
 COPY scripts/start-apache2.sh /opt/start-apache2.sh
 COPY scripts/create_mysql_admin_user.sh /opt/create_mysql_admin_user.sh
+COPY scripts/create_mysql_phpmyadmin.sh /opt/create_mysql_phpmyadmin.sh
 
 COPY scripts/run-webserver.sh /opt/run-webserver.sh
 RUN chmod 755 /opt/*.sh
@@ -49,13 +50,9 @@ RUN chmod 755 /opt/*.sh
 # config to enable .htaccess
 COPY apache.conf/apache_default /etc/apache2/sites-available/000-default.conf
 COPY apache.conf/phpmyadmin.conf /etc/apache2/conf-available/phpmyadmin.conf
+COPY mysql/create_tables.sql /tmp/create_tables.sql
 
 RUN sed -i "s#// \$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] = TRUE;#\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] = TRUE;#g" /etc/phpmyadmin/config.inc.php
-
-
-COPY mysql/create_tables.sql /tmp/create_tables.sql
-# Remove pre-installed database
-# RUN rm -rf /var/lib/mysql/*
 
 # Enable apache mods.
 RUN a2enmod php5
@@ -64,9 +61,6 @@ RUN a2enmod rewrite
 RUN php5enmod mcrypt
 
 EXPOSE 80
-
-# COPY volumes for MySQL
-VOLUME  ["/etc/mysql", "/var/lib/mysql" ]
 
 CMD ["/opt/run-webserver.sh"]
 
